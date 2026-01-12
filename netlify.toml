@@ -1,0 +1,7 @@
+[build]
+  command = "pnpm run build"
+  publish = ".next"
+
+# Netlify Next.js Runtime handles the Next.js app automatically
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
