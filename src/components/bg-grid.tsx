@@ -17,7 +17,7 @@ export function BgGrid() {
     let height = window.innerHeight;
 
     const gridSize = 120;
-    const dot = { x: 0, y: 0, targetX: 0, targetY: 0, speed: 0.8 };
+    const dot = { x: 0, y: 0, targetX: 0, targetY: 0, speed: 1.5 };
     
     // Initialize dot position
     dot.x = Math.floor(Math.random() * (width / gridSize)) * gridSize;

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Silkscreen } from "next/font/google";
+import { Geist, Geist_Mono, Silkscreen, Notable } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,9 +12,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const silkscreen = Silkscreen({
+const notable = Notable({
   weight: "400",
-  variable: "--font-silkscreen",
+  variable: "--font-notable",
   subsets: ["latin"],
 });
 
@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${silkscreen.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${notable.variable} antialiased`}
       >
         {children}
       </body>
