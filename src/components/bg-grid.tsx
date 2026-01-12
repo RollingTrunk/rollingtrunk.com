@@ -17,13 +17,51 @@ export function BgGrid() {
     let height = window.innerHeight;
 
     const gridSize = 120;
-    const dot = { x: 0, y: 0, targetX: 0, targetY: 0, speed: 1.5 };
+    const minSpeed = 0.5;
+    const maxSpeed = 3;
+    const acceleration = 0.05;
+    const deceleration = 0.03;
     
-    // Initialize dot position
-    dot.x = Math.floor(Math.random() * (width / gridSize)) * gridSize;
-    dot.y = Math.floor(Math.random() * (height / gridSize)) * gridSize;
-    dot.targetX = dot.x;
-    dot.targetY = dot.y;
+    // Define dot type with momentum and velocity
+    type Direction = { dx: number; dy: number };
+    type Dot = {
+      x: number;
+      y: number;
+      targetX: number;
+      targetY: number;
+      velocity: number;
+      lastDirection: Direction | null;
+      isAccelerating: boolean;
+      color: { primary: string; secondary: string };
+    };
+
+    // Create multiple dots with different colors
+    const createDot = (colorPrimary: string, colorSecondary: string): Dot => {
+      // Keep dots one cell away from edges so they're always fully visible
+      const maxX = Math.floor((width - gridSize) / gridSize);
+      const maxY = Math.floor((height - gridSize) / gridSize);
+      const x = (Math.floor(Math.random() * (maxX - 1)) + 1) * gridSize;
+      const y = (Math.floor(Math.random() * (maxY - 1)) + 1) * gridSize;
+      return {
+        x,
+        y,
+        targetX: x,
+        targetY: y,
+        velocity: minSpeed + Math.random() * (maxSpeed - minSpeed) / 2,
+        lastDirection: null,
+        isAccelerating: true,
+        color: { primary: colorPrimary, secondary: colorSecondary },
+      };
+    };
+
+    const dots: Dot[] = [
+      createDot("rgba(48, 166, 230, 1)", "rgba(12, 65, 180, 0.5)"),  // Blue
+      createDot("rgba(200, 80, 200, 1)", "rgba(120, 40, 140, 0.5)"), // Magenta/Purple
+      createDot("rgba(255, 140, 50, 1)", "rgba(180, 80, 20, 0.5)"),  // Orange
+      createDot("rgba(80, 220, 120, 1)", "rgba(30, 140, 60, 0.5)"),  // Green
+      createDot("rgba(80, 220, 220, 1)", "rgba(30, 140, 140, 0.5)"), // Cyan
+      createDot("rgba(255, 80, 100, 1)", "rgba(180, 40, 60, 0.5)"),  // Red/Pink
+    ];
 
     const resize = () => {
       width = window.innerWidth;
@@ -54,48 +92,106 @@ export function BgGrid() {
       }
     };
 
-    const updateDot = () => {
+    const updateDot = (dot: Dot, allDots: Dot[]) => {
       const dx = dot.targetX - dot.x;
       const dy = dot.targetY - dot.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      if (dist < dot.speed) {
+      // Acceleration/Deceleration logic
+      const distToTarget = dist;
+      const shouldDecelerate = distToTarget < gridSize * 0.4;
+      
+      if (shouldDecelerate) {
+        // Decelerate as we approach target
+        dot.velocity = Math.max(minSpeed, dot.velocity - deceleration);
+        dot.isAccelerating = false;
+      } else if (dot.isAccelerating) {
+        // Accelerate when moving
+        dot.velocity = Math.min(maxSpeed, dot.velocity + acceleration);
+      }
+
+      if (dist < dot.velocity) {
         dot.x = dot.targetX;
         dot.y = dot.targetY;
         
-        // Pick new random direction
-        const directions = [
+        // Pick new direction with momentum
+        const directions: Direction[] = [
           { dx: gridSize, dy: 0 },
           { dx: -gridSize, dy: 0 },
           { dx: 0, dy: gridSize },
           { dx: 0, dy: -gridSize },
         ];
         
-        // Filter out of bounds
-        const validDirections = directions.filter(d => {
+        // Filter out of bounds - keep one grid cell away from edges
+        let validDirections = directions.filter(d => {
           const nx = dot.x + d.dx;
           const ny = dot.y + d.dy;
-          return nx >= 0 && nx <= width && ny >= 0 && ny <= height;
+          return nx >= gridSize && nx <= width - gridSize && ny >= gridSize && ny <= height - gridSize;
         });
 
+        // Collision avoidance - filter out directions where another dot is or is heading
+        validDirections = validDirections.filter(d => {
+          const nextX = dot.x + d.dx;
+          const nextY = dot.y + d.dy;
+          
+          for (const other of allDots) {
+            if (other === dot) continue;
+            
+            // Check if another dot is at or heading to this position
+            const otherAtPosition = Math.abs(other.x - nextX) < gridSize / 2 && Math.abs(other.y - nextY) < gridSize / 2;
+            const otherHeadingTo = Math.abs(other.targetX - nextX) < gridSize / 2 && Math.abs(other.targetY - nextY) < gridSize / 2;
+            
+            if (otherAtPosition || otherHeadingTo) {
+              return false;
+            }
+          }
+          return true;
+        });
+
+        // If no valid directions after collision check, allow any valid boundary direction
+        if (validDirections.length === 0) {
+          validDirections = directions.filter(d => {
+            const nx = dot.x + d.dx;
+            const ny = dot.y + d.dy;
+            return nx >= gridSize && nx <= width - gridSize && ny >= gridSize && ny <= height - gridSize;
+          });
+        }
+
         if (validDirections.length > 0) {
-            const dir = validDirections[Math.floor(Math.random() * validDirections.length)];
-            dot.targetX = dot.x + dir.dx;
-            dot.targetY = dot.y + dir.dy;
+          let chosenDir: Direction;
+          
+          // Momentum: 70% chance to continue in the same direction if valid
+          if (dot.lastDirection && Math.random() < 0.7) {
+            const sameDir = validDirections.find(
+              d => d.dx === dot.lastDirection!.dx && d.dy === dot.lastDirection!.dy
+            );
+            if (sameDir) {
+              chosenDir = sameDir;
+            } else {
+              chosenDir = validDirections[Math.floor(Math.random() * validDirections.length)];
+            }
+          } else {
+            chosenDir = validDirections[Math.floor(Math.random() * validDirections.length)];
+          }
+          
+          dot.targetX = dot.x + chosenDir.dx;
+          dot.targetY = dot.y + chosenDir.dy;
+          dot.lastDirection = chosenDir;
+          dot.isAccelerating = true; // Start accelerating towards new target
         }
 
       } else {
-         const angle = Math.atan2(dy, dx);
-         dot.x += Math.cos(angle) * dot.speed;
-         dot.y += Math.sin(angle) * dot.speed;
+        const angle = Math.atan2(dy, dx);
+        dot.x += Math.cos(angle) * dot.velocity;
+        dot.y += Math.sin(angle) * dot.velocity;
       }
     };
 
-    const drawDot = () => {
+    const drawDot = (dot: Dot) => {
       // Glow effect
       const gradient = ctx.createRadialGradient(dot.x, dot.y, 1, dot.x, dot.y, 10);
-      gradient.addColorStop(0, "rgba(48, 166, 230, 1)");
-      gradient.addColorStop(0.5, "rgba(12, 65, 180, 0.5)");
+      gradient.addColorStop(0, dot.color.primary);
+      gradient.addColorStop(0.5, dot.color.secondary);
       gradient.addColorStop(1, "rgba(0, 50, 0, 0)");
 
       ctx.fillStyle = gradient;
@@ -113,8 +209,10 @@ export function BgGrid() {
     const animate = () => {
       ctx.clearRect(0, 0, width, height);
       drawGrid();
-      updateDot();
-      drawDot();
+      dots.forEach(dot => {
+        updateDot(dot, dots);
+        drawDot(dot);
+      });
       animationFrameId = requestAnimationFrame(animate);
     };
 
