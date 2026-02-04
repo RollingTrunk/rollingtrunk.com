@@ -34,3 +34,13 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Project Skills & Knowledge Base
+
+This project contains specific documentation and "skills" for AI agents to follow, located in `.agent/skills/`.
+
+- **Frontend Best Practices**: Architecture, Accessibility, Performance (`.agent/skills/frontend/SKILL.md`)
+- **Creative Development**: Animation, Interaction Design, "Wow" Factor (`.agent/skills/creative-dev/SKILL.md`)
+- **Marketing Psychology**: CRO, Cognitive Biases, Persuasive Design (`.agent/skills/marketing-psychology/SKILL.md`)
+- **Next.js & React**: Modern App Router patterns, R3F, State Management (`.agent/skills/nextjs-react/SKILL.md`)
+- **3D Web Experiences**: Three.js, React-Three-Fiber, Optimization (`.agent/skills/3d-web/SKILL.md`)
