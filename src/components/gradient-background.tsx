@@ -24,9 +24,9 @@ function GradientBubble({ position, color, speed, distort, scale }: { position: 
   );
 }
 
-export function GradientBackground() {
+export function GradientBackground({ showFade = false }: { showFade?: boolean }) {
   return (
-    <div className="absolute inset-0 -z-10 w-full h-full bg-white bg-gradient-to-br from-orange-50 to-amber-50">
+    <div className="absolute inset-0 -z-10 w-full h-full bg-white bg-linear-to-br from-orange-50 to-amber-50">
       <Canvas
         camera={{ position: [0, 0, 8], fov: 45 }}
         dpr={[1, 2]} // optimization for high dpi
@@ -69,8 +69,13 @@ export function GradientBackground() {
         </group>
       </Canvas>
       
-      {/* Overlay to blend it more softly if needed */}
+      {/* Overlay for glass effect */}
       <div className="absolute inset-0 bg-white/30 backdrop-blur-[50px] pointer-events-none" />
+      
+      {/* Optional Fade to white */}
+      {showFade && (
+        <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-white pointer-events-none" />
+      )}
     </div>
   );
 }

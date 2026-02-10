@@ -1,13 +1,13 @@
 import { GradientBackground } from "@/components/gradient-background";
 import { Header } from "@/components/header";
 import { ProjectCard } from "@/components/project-card";
-import { MissionSection } from "@/components/mission-section";
+import { UIMasonry } from "@/components/ui-masonry";
 
 export default function Home() {
   return (
     <main className="relative w-full min-h-screen overflow-x-hidden text-gray-900 selection:bg-indigo-100 selection:text-indigo-900">
       {/* 3D Gradient Background */}
-      <GradientBackground />
+      <GradientBackground showFade={true} />
 
       {/* Header */}
       <Header />
@@ -15,14 +15,14 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative w-full min-h-[80vh] flex flex-col items-center justify-center px-4">
         <div className="z-10 text-center max-w-4xl mx-auto">
-          <h1 className="text-6xl md:text-9xl tracking-tighter uppercase font-black font-(family-name:--font-notable) text-transparent bg-clip-text bg-gradient-to-b from-gray-900 to-gray-600 drop-shadow-sm mb-6 animate-fade-in-up">
+          <h1 className="text-6xl md:text-9xl tracking-tighter uppercase font-black font-(family-name:--font-notable) text-transparent bg-clip-text bg-linear-to-b from-gray-900 to-gray-600 drop-shadow-sm mb-6 animate-fade-in-up">
             Rolling Trunk
           </h1>
           <p className="text-lg md:text-2xl font-medium tracking-tight text-gray-600 max-w-2xl mx-auto animate-fade-in-up delay-100">
             Design. Develop. Deploy.
           </p>
-          <div className="relative z-50 mt-6 inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-white/40 backdrop-blur-md border border-white/50 shadow-sm animate-fade-in-up delay-200">
-            <p className="text-xs md:text-sm font-bold tracking-widest uppercase text-gray-900">
+          <div className="relative z-50 mt-6 inline-flex items-center justify-center px-4 py-1 rounded-full bg-gray-900/[0.03] border border-gray-900/10 animate-fade-in-up delay-200">
+            <p className="text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-gray-700">
               Creative Agency
             </p>
           </div>
@@ -31,12 +31,11 @@ export default function Home() {
 
 
 
-      {/* Mission Statement */}
-      {/* Mission Statement */}
-      <MissionSection />
+      {/* UI Showcase */}
+      <UIMasonry />
 
       {/* Projects Section */}
-      <section className="relative w-full py-24 px-4 md:px-12 lg:px-24">
+      <section className="relative w-full py-24 px-4 md:px-12 lg:px-24 bg-linear-to-b from-transparent via-gray-50/50 to-transparent">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-end justify-between mb-12 border-b border-gray-200/50 pb-6">
              <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900">
@@ -74,17 +73,13 @@ export default function Home() {
             Let's build something amazing together.
           </p>
           <a
-            href="mailto:hello@rollingtrunk.com?subject=Inquiry to work with rolling trunk"
+            href="/contact"
             className="inline-flex items-center justify-center px-8 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out bg-gray-900 rounded-full hover:bg-gray-800 hover:scale-105 hover:shadow-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
           >
-            Contact Us
+            Get in Touch
           </a>
         </div>
       </section>
-      
-      <footer className="w-full py-12 text-center text-gray-500 text-sm font-medium tracking-wide">
-        &copy; {new Date().getFullYear()} Rolling Trunk. All rights reserved.
-      </footer>
     </main>
   );
 }
